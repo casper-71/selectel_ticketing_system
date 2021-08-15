@@ -49,7 +49,7 @@
 ```bash
  $ pip install pipenv
 ```
-В директории `api_service` запустить команду:
+В корневой директории запустить команду:  
 ```bash
 $ pipenv install --ignore-pipfile
 ```
