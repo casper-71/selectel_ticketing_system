@@ -57,7 +57,8 @@ $ pipenv install --ignore-pipfile
 ### Переменные окружения
 ```dotenv
 DATABASE_DSN='<строка подключения к Database>'
-REDIS_DSN='<строка подключения к Redis>'
+REDIS_HOST='<адрес Redis хоста>'
+REDIS_PORT='<порт для подключения к Redis>'
 ```
 
 ### Управление миграциями через Alembic
@@ -76,16 +77,16 @@ REDIS_DSN='<строка подключения к Redis>'
    ```
 
 ### Запуск проекта
-```bash
-$ sudo docker-compose up -d
-```
-#### Этапы запуска:  
-* Build image: `app`  
-* Start: `Redis`, `PostgreSQL`  
-
-После того как запустится `app`, запустится проверка:  
-* ожидание когда сервис `Redis` будет полностью запущен и начнет принимать запросы  
-* доступность БД
+1. Создать файл `.env`  
+2. Запуск сервисов `PostgreSQL`, `Redis`  
+    ```bash
+    $ sudo docker-compose up -d
+    ```  
+3. После того как запустится `PostgreSQL`, `Redis`:  
+    В корневой директории запустить:  
+    ```bash
+    $ ./entrypoint.sh
+    ```
 
 ## Полезные материалы
 
