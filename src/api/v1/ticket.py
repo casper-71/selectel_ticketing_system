@@ -32,13 +32,13 @@ async def get_ticket(
     db: Session = Depends(get_postgresql),
     service: TicketService = Depends(get_ticket_service),
 ) -> Optional[TicketFull]:
-    """[summary]
+    """Get ticket by ID
 
     Args:  
-        ticket_id (UUID): [description]  
+        ticket_id (UUID): ticket ID  
 
     Returns:  
-        Optional[TicketFull]: [description]  
+        Optional[TicketFull]: Ticket full data
     """   
     ticket = await service.get(db=db, item_id=ticket_id)
     if not ticket:
@@ -54,13 +54,13 @@ async def list_tickets(
     db: Session = Depends(get_postgresql),
     service: TicketService = Depends(get_ticket_service),
 ) -> Optional[List[Ticket]]:
-    """[summary]
+    """Get tickets list
 
     Args:  
-        page (Page, optional): [description]. Defaults to Depends().  
+        page (Page, optional): page size and page limits  
 
     Returns:  
-        Optional[List[Ticket]]: [description]
+        Optional[List[Ticket]]: List of tickets
     """
     tickets = await service.list(db, skip=page.number, limit=page.size)
     if not tickets:
@@ -76,13 +76,13 @@ async def create_ticket(
     db: Session = Depends(get_postgresql),
     service: TicketService = Depends(get_ticket_service),
 ) -> TicketFull:
-    """[summary]
+    """Create a new ticket
 
     Args:
-        ticket_in (TicketCreate): [description]
+        ticket_in (TicketCreate): body request
 
     Returns:
-        TicketFull: [description]
+        TicketFull: Ticket full data
     """
 
     return await service.create(db, obj_in=ticket_in)
@@ -96,13 +96,13 @@ async def update_ticket(
     db: Session = Depends(get_postgresql),
     service: TicketService = Depends(get_ticket_service),
 ) -> Optional[TicketFull]:
-    """[summary]
+    """Update ticket
 
     Args:
-        ticket_id (UUID): [description]
+        ticket_id (UUID): ticket ID  
 
     Returns:
-        Optional[TicketFull]: [description]
+        Optional[TicketFull]: Ticket full data
     """
     ticket = await service.get(db, item_id=ticket_id)
     if not ticket:
@@ -121,13 +121,13 @@ async def delete_ticket(
     db: Session = Depends(get_postgresql),
     service: TicketService = Depends(get_ticket_service),
 ) -> TicketFull:
-    """[summary]
+    """Delete a ticket
 
     Args:
-        ticket_id (UUID): [description]
+        ticket_id (UUID): ticket ID  
 
     Returns:
-        TicketFull: [description]
+        TicketFull: Ticket full data
     """
     ticket = await service.get(db, item_id=ticket_id)
     if not ticket:

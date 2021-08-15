@@ -21,14 +21,14 @@ from src.services.crud.base import CRUDBase
 class CommentService(CRUDBase[comment_model.Comment, comment_schema.CommentCreate, comment_schema.CommentUpdate]):
 
     async def get(self, db: Session, item_id: UUID) -> Optional[comment_model.Comment]:
-        """[summary]
+        """ Get comment by ID
 
         Args:
-            db (Session): [description]
-            item_id (UUID): [description]
+            db (Session): SQLAlchemy Session
+            item_id (UUID): comment ID
 
         Returns:
-            Optional[comment_model.Comment]: [description]
+            Optional[comment_model.Comment]: Comment full data
         """        
         return await super().get(db, item_id)
 
@@ -36,26 +36,28 @@ class CommentService(CRUDBase[comment_model.Comment, comment_schema.CommentCreat
         """[summary]
 
         Args:
-            db (Session): [description]
-            skip (int): [description]
-            limit (int): [description]
+            db (Session): SQLAlchemy Session
+            skip (int): page number
+            limit (int): page limit
 
         Returns:
-            List[comment_model.Comment]: [description]
+            List[comment_model.Comment]: List of comments
         """        """  """
         return await super().list(db, skip=skip, limit=limit)
 
     async def create(self, db: Session, *, obj_in: comment_schema.CommentCreate) -> comment_model.Comment:
-        """[summary]
+        """Create a new comment
 
         Args:
-            db (Session): [description]
-            obj_in (comment_schema.CommentCreate): [description]
+            db (Session): SQLAlchemy Session
+            obj_in (comment_schema.CommentCreate): request parameters
 
         Returns:
-            comment_model.Comment: [description]
+            comment_model.Comment: Comment full data
         """
         ticket = db.query(tickets.Ticket).filter_by(id=obj_in.ticket_id).one()
+
+        # If ticket status is `Closed` comment won't create
         if ticket.status == tickets.TicketStatus.CLOSED:
             raise exceptions.TicketStatusNotAllowed(
                 "Ticket Status Not Allowed",
@@ -66,27 +68,27 @@ class CommentService(CRUDBase[comment_model.Comment, comment_schema.CommentCreat
     async def update(
         self, db: Session, *, db_obj: comment_model.Comment, obj_in: Union[comment_schema.CommentUpdate, Dict[str, Any]]
     ) -> comment_model.Comment:
-        """[summary]
+        """Update comment
 
         Args:
-            db (Session): [description]
-            db_obj (comment_model.Comment): [description]
-            obj_in (Union[comment_schema.CommentUpdate, Dict[str, Any]]): [description]
+            db (Session): SQLAlchemy Session
+            db_obj (comment_model.Comment): Database Model
+            obj_in (Union[comment_schema.CommentUpdate, Dict[str, Any]]): request parameters
 
         Returns:
-            comment_model.Comment: [description]
+            comment_model.Comment: Comment model
         """        
         return await super().update(db, db_obj=db_obj, obj_in=obj_in)
 
     async def remove(self, db: Session, *, item_id: UUID) -> comment_model.Comment:
-        """[summary]
+        """ Delete comment
 
         Args:
-            db (Session): [description]
-            item_id (UUID): [description]
+            db (Session): SQLAlchemy Session
+            item_id (UUID): comment ID
 
         Returns:
-            comment_model.Comment: [description]
+            comment_model.Comment: Full data by Comment
         """        
         return await super().remove(db, item_id=item_id)
 
