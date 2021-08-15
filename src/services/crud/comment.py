@@ -12,12 +12,13 @@ from typing import (
 )
 
 from src.db.redis import get_redis
+from src.core import exceptions
 from src.schemas import comment as comment_schema
-from src.models import comments as comment_model
+from src.models import comments as comment_model, tickets
 from src.services.crud.base import CRUDBase
 
 
-class TicketService(CRUDBase[comment_model.Comment, comment_schema.CommentCreate, comment_schema.CommentUpdate]):
+class CommentService(CRUDBase[comment_model.Comment, comment_schema.CommentCreate, comment_schema.CommentUpdate]):
 
     async def get(self, db: Session, item_id: UUID) -> Optional[comment_model.Comment]:
         """[summary]
@@ -53,7 +54,13 @@ class TicketService(CRUDBase[comment_model.Comment, comment_schema.CommentCreate
 
         Returns:
             comment_model.Comment: [description]
-        """        
+        """
+        ticket = db.query(tickets.Ticket).filter_by(id=obj_in.ticket_id).one()
+        if ticket.status == tickets.TicketStatus.CLOSED:
+            raise exceptions.TicketStatusNotAllowed(
+                "Ticket Status Not Allowed",
+                f"Comment Not Allowed in ticket status: {ticket.status.value}"
+            )
         return await super().create(db, obj_in=obj_in)
 
     async def update(
@@ -85,10 +92,10 @@ class TicketService(CRUDBase[comment_model.Comment, comment_schema.CommentCreate
 
 
 @lru_cache
-def get_cluster_service(
+def get_comment_service(
     redis: Redis = Depends(get_redis),
-) -> TicketService:
-    return TicketService(
+) -> CommentService:
+    return CommentService(
         comment_model.Comment,
         redis=redis,
     )

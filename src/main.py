@@ -10,6 +10,7 @@ from fastapi.responses import ORJSONResponse
 from src.core import logger
 from src.core.config.app_settings import AppSettings
 from src.db import redis, postgresql
+from src.api.v1 import ticket, comment
 
 # Применяем настройки логирования
 logging_config.dictConfig(logger.LOGGING)
@@ -61,6 +62,12 @@ async def shutdown():
     # Отключаемся от баз при выключении сервера
     await redis.pool.disconnect()
     await postgresql.database.disconnect()
+
+
+# Подключаем роутер к серверу, указав префикс /v1/<service>
+# Теги указываем для удобства навигации по документации
+app.include_router(ticket.router, prefix='/v1/ticket', tags=['ticket'])
+app.include_router(comment.router, prefix='/v1/comment', tags=['comment'])
 
 
 if __name__ == '__main__':
