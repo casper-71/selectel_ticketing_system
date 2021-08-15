@@ -57,7 +57,8 @@ $ pipenv install --ignore-pipfile
 ### Переменные окружения
 ```dotenv
 DATABASE_DSN='<строка подключения к Database>'
-REDIS_DSN='<строка подключения к Redis>'
+REDIS_HOST='<адрес Redis хоста>'
+REDIS_PORT='<порт для подключения к Redis>'
 ```
 
 ### Управление миграциями через Alembic
