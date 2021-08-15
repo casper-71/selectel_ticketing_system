@@ -10,21 +10,15 @@ from src.models.base_mixins import TimestampMixin, AuditMixin, BaseMixin
 
 
 class CommentMixin(TimestampMixin, AuditMixin):
-    """  """    
+    """ Base comment model """    
     email = Column(String, nullable=False)
     body = Column(String, nullable=False)
 
 
 class Comment(Base, BaseMixin, CommentMixin):
-    """[summary]
+    """Comment model
 
-    Args:
-        Base ([type]): [description]
-        BaseMixin ([type]): [description]
-        CommentMixin ([type]): [description]
-
-    Returns:
-        [type]: [description]
+    links: one-to-many with Ticket model
     """    
     ticket_id = Column(UUID(as_uuid=True), ForeignKey("tickets.id"), onupdate="CASCADE")
 

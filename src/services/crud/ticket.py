@@ -23,14 +23,14 @@ from src.services.crud.base import CRUDBase
 class TicketService(CRUDBase[ticket_model.Ticket, ticket_schema.TicketCreate, ticket_schema.TicketUpdate]):
 
     async def get(self, db: Session, item_id: UUID) -> Optional[ticket_model.Ticket]:
-        """[summary]
+        """ Get ticket by ID
 
         Args:
-            db (Session): [description]
-            item_id (UUID): [description]
+            db (Session): SQLAlchemy Session
+            item_id (UUID): ticket ID
 
         Returns:
-            Optional[ticket_model.Ticket]: [description]
+            Optional[ticket_model.Ticket]: Ticket full data
         """
         ticket = await self.cache.get_from_cache(obj_id=str(item_id), obj_model=ticket_schema.Comment)
         if not ticket:
@@ -42,27 +42,27 @@ class TicketService(CRUDBase[ticket_model.Ticket, ticket_schema.TicketCreate, ti
         return ticket
 
     async def list(self, db: Session, *, skip: int = 0, limit: int = 100) -> List[ticket_model.Ticket]:
-        """[summary]
+        """ List of tickets
 
         Args:
-            db (Session): [description]
-            skip (int): [description]
-            limit (int): [description]
+            db (Session): SQLAlchemy Session
+            skip (int): page number
+            limit (int): page limit
 
         Returns:
-            List[ticket_model.Ticket]: [description]
+            List[ticket_model.Ticket]: List of tickets
         """        """  """
         return await super().list(db, skip=skip, limit=limit)
 
     async def create(self, db: Session, *, obj_in: ticket_schema.TicketCreate) -> ticket_model.Ticket:
-        """[summary]
+        """Create a ticket
 
         Args:
-            db (Session): [description]
-            obj_in (ticket_schema.TicketCreate): [description]
+            db (Session): SQLAlchemy Session
+            obj_in (ticket_schema.TicketCreate): request parameters
 
         Returns:
-            ticket_model.Ticket: [description]
+            ticket_model.Ticket: Ticket full data
         """     
         versioned_session(db)
         data_in_obj = jsonable_encoder(obj_in)
@@ -81,12 +81,12 @@ class TicketService(CRUDBase[ticket_model.Ticket, ticket_schema.TicketCreate, ti
         """[summary]
 
         Args:
-            db (Session): [description]
-            db_obj (ticket_model.Ticket): [description]
-            obj_in (Union[ticket_schema.TicketUpdate, Dict[str, Any]]): [description]
+            db (Session): SQLAlchemy Session
+            db_obj (ticket_model.Ticket): Database model of Ticket
+            obj_in (Union[ticket_schema.TicketUpdate, Dict[str, Any]]): request parameters
 
         Returns:
-            ticket_model.Ticket: [description]
+            ticket_model.Ticket: Ticket full data
         """
         versioned_session(db)
         transactions_task = ticket_schema.TransactionStatus()
@@ -95,6 +95,10 @@ class TicketService(CRUDBase[ticket_model.Ticket, ticket_schema.TicketCreate, ti
             obj_in = ticket_schema.TicketUpdate(**obj_in)
         status_new = obj_in.status.value                      # type: ignore
         status_old = db_obj.status.value
+
+        # Тикет создается в статусе “открыт”, может перейти в “отвечен” или “закрыт”, из
+        # отвечен в “ожидает ответа” или “закрыт”, статус “закрыт” финальный (нельзя
+        # изменить статус или добавить комментарий)
 
         if db_obj.status == ticket_model.TicketStatus.OPEN:
             if obj_in.status in transactions_task.open:   # type: ignore
@@ -117,11 +121,11 @@ class TicketService(CRUDBase[ticket_model.Ticket, ticket_schema.TicketCreate, ti
         """[summary]
 
         Args:
-            db (Session): [description]
-            item_id (UUID): [description]
+            db (Session): SQLAlchemy Session
+            item_id (UUID): ticket ID
 
         Returns:
-            ticket_model.Ticket: [description]
+            ticket_model.Ticket: Ticket full data
         """        
         ticket = await super().remove(db, item_id=item_id)
         await self.cache.delete_from_cache(obj_id=str(ticket.id))

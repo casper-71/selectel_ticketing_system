@@ -37,7 +37,10 @@ class TicketMixin(TimestampMixin, AuditMixin):
 
 
 class Ticket(Versioned, Base, BaseMixin, TicketMixin):
-    """  """
+    """Ticket model
+
+    links: one-to-many with Comments model
+    """  
 
     @declared_attr
     def comment(cls):                               # pylint: disable=no-self-argument

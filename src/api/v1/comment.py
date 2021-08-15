@@ -29,13 +29,12 @@ async def get_comment(
     db: Session = Depends(get_postgresql),
     service: CommentService = Depends(get_comment_service),
 ) -> Optional[CommentFull]:
-    """[summary]
-
+    """Get ticket by ID
     Args:  
-        Comment_id (UUID): [description]  
+        comment_id (UUID): comment ID
 
     Returns:  
-        Optional[CommentFull]: [description]  
+        Optional[CommentFull]: comment full data
     """   
     comment = await service.get(db=db, item_id=comment_id)
     if not comment:
@@ -51,13 +50,13 @@ async def create_comment(
     db: Session = Depends(get_postgresql),
     service: CommentService = Depends(get_comment_service),
 ) -> CommentFull:
-    """[summary]
+    """ Create a new Comment
 
     Args:
-        Comment_in (CommentCreate): [description]
+        comment_in (CommentCreate): body request
 
     Returns:
-        CommentFull: [description]
+        CommentFull: comment full data
     """
 
     try:
@@ -73,13 +72,13 @@ async def delete_comment(
     db: Session = Depends(get_postgresql),
     service: CommentService = Depends(get_comment_service),
 ) -> CommentFull:
-    """[summary]
+    """Delete a comment
 
     Args:
-        Comment_id (UUID): [description]
+        comment_id (UUID): comment ID
 
     Returns:
-        CommentFull: [description]
+        CommentFull: comment full data
     """
     comment = await service.get(db, item_id=comment_id)
     if not comment:
