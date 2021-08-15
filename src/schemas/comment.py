@@ -1,6 +1,7 @@
 import orjson
 
-from typing import Optional
+from datetime import datetime
+from typing import Optional, Any
 from uuid import UUID
 from pydantic import (
     BaseModel,
@@ -30,7 +31,11 @@ class CommentCreate(CommentBase):
     ticket_id: UUID
 
     created_by: str
-    updated_by: str
+    updated_by: Optional[str]
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        self.updated_by = self.created_by
 
 
 class CommentUpdate(CommentBase):
@@ -41,6 +46,7 @@ class CommentUpdate(CommentBase):
 class CommentInDBBase(CommentBase):
     id: Optional[UUID]
     email: Optional[EmailStr]
+    created_at: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -53,3 +59,5 @@ class Comment(CommentInDBBase):
 class CommentFull(CommentInDBBase):
     created_by: Optional[str]
     updated_by: Optional[str]
+
+    updated_at: Optional[datetime]

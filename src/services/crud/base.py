@@ -33,7 +33,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db.query(self.model).offset(skip * limit).limit(limit).all()
 
     async def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
-        db_obj = self.model(**obj_in)       # type: ignore
+        db_obj = self.model(**obj_in.dict())       # type: ignore
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
